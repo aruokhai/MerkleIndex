@@ -93,18 +93,15 @@ pub mod pallet {
 		NotPatientLinking
 	}
 
-	// #[pallet::hooks]
-	// impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
-	// 	fn offchain_worker(block_number: BlockNumberFor<T>) {
-	// 		let node_address = StorageValueRef::persistent(b"index::node-address");
- 	// 		if let Ok(Some(address)) = node_address.get::<T::AccountId>() {
-	// 			let result = Self::add_provider_oauth_client(address);
- 	// 			log::info!("cached result: {:?}", result);
- 	// 		}
-	// 	}
-	
-
-	// }
+	#[pallet::hooks]
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+		fn offchain_worker(block_number: BlockNumberFor<T>) {
+			let node_address = StorageValueRef::persistent(b"index::node-address");
+ 			if let Ok(Some(address)) = node_address.get::<T::AccountId>() {
+				let result = Self::add_provider_oauth_client(address);
+ 			}
+		}
+	}
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
 	// These functions materialize as "extrinsics", which are often compared to transactions.
@@ -156,17 +153,15 @@ pub mod pallet {
 					Ok(())
 				}
 			}
-	
 		}
-
 		
 	}
 
-	// impl<T: Config> Pallet<T> {
+	impl<T: Config> Pallet<T> {
 
-	// 	fn add_provider_oauth_client(node_address: T::AccountId) -> Result<(), &'static str> {
-	// 		let active_patient_link = <ActiveLinkPatient<T>>::get().ok_or("No patient");
-	// 	}
-	// }
+		fn add_provider_oauth_client(node_address: T::AccountId) -> Result<(), &'static str> {
+			let active_patient_link = <ActiveLinkPatient<T>>::get().ok_or("No patient")?;
+		}
+	}
 
 }
