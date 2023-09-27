@@ -4,7 +4,15 @@
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/reference/frame-pallets/>
 pub use pallet::*;
-
+use frame_support::traits::Get;
+use frame_system::{
+	self as system,
+	offchain::{
+		AppCrypto, CreateSignedTransaction, SendSignedTransaction, SendUnsignedTransaction,
+		SignedPayload, Signer, SigningTypes, SubmitTransaction,
+	},
+	pallet_prelude::BlockNumberFor,
+};
 #[cfg(test)]
 mod mock;
 
@@ -15,11 +23,21 @@ mod tests;
 mod benchmarking;
 pub mod weights;
 pub use weights::*;
+use sp_runtime::{
+	offchain::{
+		http,
+		storage::{MutateStorageError, StorageRetrievalError, StorageValueRef},
+		Duration,
+	},
+	traits::Zero,
+	transaction_validity::{InvalidTransaction, TransactionValidity, ValidTransaction},
+	RuntimeDebug,
+};
 
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use frame_support::pallet_prelude::*;
+	use frame_support::pallet_prelude::{*, OptionQuery};
 	use frame_system::pallet_prelude::*;
 	use frame_support::sp_std::vec::*;
 	use frame_support::sp_std::collections::btree_map::*;
@@ -47,15 +65,11 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn active_link_provider)]
-	pub type ActiveLinkProvider<T: Config> = StorageValue<_, StorageValue<_, T::AccountId, ValueQuery>; 
+	pub type ActiveLinkProvider<T: Config> = StorageValue<_, T::AccountId, OptionQuery>; 
 
 	#[pallet::storage]
 	#[pallet::getter(fn active_link_patient)]
-	pub type ActiveLinkPatient<T: Config> = StorageValue<_, StorageValue<_, T::AccountId, ValueQuery>;
-
-	#[pallet::storage]
-	#[pallet::getter(fn active_link)]
-	pub type ActiveLink<T: Config> = StorageValue<_, StorageValue<_, bool, ValueQuery>;
+	pub type ActiveLinkPatient<T: Config> = StorageValue<_, T::AccountId, OptionQuery>;
 
 
 	// Pallets use events to inform users when important changes are made.
@@ -79,11 +93,18 @@ pub mod pallet {
 		NotPatientLinking
 	}
 
-	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+	// #[pallet::hooks]
+	// impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+	// 	fn offchain_worker(block_number: BlockNumberFor<T>) {
+	// 		let node_address = StorageValueRef::persistent(b"index::node-address");
+ 	// 		if let Ok(Some(address)) = node_address.get::<T::AccountId>() {
+	// 			let result = Self::add_provider_oauth_client(address);
+ 	// 			log::info!("cached result: {:?}", result);
+ 	// 		}
+	// 	}
+	
 
-		
-	}
+	// }
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
 	// These functions materialize as "extrinsics", which are often compared to transactions.
@@ -138,24 +159,14 @@ pub mod pallet {
 	
 		}
 
-		// An example dispatchable that may throw a custom error.
-		// #[pallet::call_index(1)]
-		// #[pallet::weight(T::WeightInfo::cause_error())]
-		// pub fn cause_error(origin: OriginFor<T>) -> DispatchResult {
-		// 	let _who = ensure_signed(origin)?;
-
-		// 	// Read a value from storage.
-		// 	match <Something<T>>::get() {
-		// 		// Return an error if the value has not been set.
-		// 		None => return Err(Error::<T>::NoneValue.into()),
-		// 		Some(old) => {
-		// 			// Increment the value read from storage; will error in the event of overflow.
-		// 			let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-		// 			// Update the value in storage with the incremented result.
-		// 			<Something<T>>::put(new);
-		// 			Ok(())
-		// 		},
-		// 	}
-		// }
+		
 	}
+
+	// impl<T: Config> Pallet<T> {
+
+	// 	fn add_provider_oauth_client(node_address: T::AccountId) -> Result<(), &'static str> {
+	// 		let active_patient_link = <ActiveLinkPatient<T>>::get().ok_or("No patient");
+	// 	}
+	// }
+
 }
