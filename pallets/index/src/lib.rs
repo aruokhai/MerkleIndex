@@ -3,8 +3,8 @@
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/reference/frame-pallets/>
-pub use pallet::*;
-use frame_support::traits::Get;
+pub use frame_system::pallet::*;
+use frame_support::{traits::Get, pallet};
 use frame_system::{
 	self as system,
 	offchain::{
@@ -62,6 +62,10 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn patients)]
 	pub type Patient<T: Config> = StorageMap<_,Blake2_128Concat,T::AccountId, Vec<u8>, ValueQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn patient_provider_link)]
+	pub type PatientProviderLink<T: Config> = StorageMap<_,Blake2_128Concat,T::AccountId,Blake2_128Concat,T::AccountId, Vec<u8>, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn active_link_provider)]
@@ -161,6 +165,19 @@ pub mod pallet {
 
 		fn add_provider_oauth_client(node_address: T::AccountId) -> Result<(), &'static str> {
 			let active_patient_link = <ActiveLinkPatient<T>>::get().ok_or("No patient")?;
+			let active_provider_link = <ActiveLinkProvider<T>>::get().ok_or("No provider")?;
+			if (node_address != active_provider_link) {
+				log::info!("registering provider");
+				return Ok(())
+			}
+			let all_providers = <<Provider<T>>::iter();
+			for (provider, details) in map.iter() {
+				if <PatientProviderLink<T>>::contains_key(provider.clone(), active_provider_link.clone()) {
+					log::info!("registering provider");
+				}
+			}
+
+			Ok(())
 		}
 	}
 
