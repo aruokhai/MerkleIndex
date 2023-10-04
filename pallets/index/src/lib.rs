@@ -4,15 +4,7 @@
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/reference/frame-pallets/>
 pub use frame_system::pallet::*;
-use frame_support::{traits::Get, pallet};
-use frame_system::{
-	self as system,
-	offchain::{
-		AppCrypto, CreateSignedTransaction, SendSignedTransaction, SendUnsignedTransaction,
-		SignedPayload, Signer, SigningTypes, SubmitTransaction,
-	},
-	pallet_prelude::BlockNumberFor,
-};
+
 #[cfg(test)]
 mod mock;
 
@@ -23,24 +15,24 @@ mod tests;
 mod benchmarking;
 pub mod weights;
 pub use weights::*;
-use sp_runtime::{
-	offchain::{
-		http,
-		storage::{MutateStorageError, StorageRetrievalError, StorageValueRef},
-		Duration,
-	},
-	traits::Zero,
-	transaction_validity::{InvalidTransaction, TransactionValidity, ValidTransaction},
-	RuntimeDebug,
-};
 
 #[frame_support::pallet]
 pub mod pallet {
-	use super::*;
-	use frame_support::pallet_prelude::{*, OptionQuery};
 	use frame_system::pallet_prelude::*;
 	use frame_support::sp_std::vec::*;
+	use frame_support::pallet_prelude::*;
 	use frame_support::sp_std::collections::btree_map::*;
+	use crate::weights::*;
+	use sp_runtime::{
+		offchain::{
+			http,
+			storage::{MutateStorageError, StorageRetrievalError, StorageValueRef},
+			Duration,
+		},
+		traits::Zero,
+		transaction_validity::{InvalidTransaction, TransactionValidity, ValidTransaction},
+		RuntimeDebug,
+	};
 
 	#[pallet::pallet]
 	#[pallet::without_storage_info]
@@ -65,7 +57,7 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn patient_provider_link)]
-	pub type PatientProviderLink<T: Config> = StorageMap<_,Blake2_128Concat,T::AccountId,Blake2_128Concat,T::AccountId, Vec<u8>, ValueQuery>;
+	pub type PatientProviderLink<T: Config> = StorageDoubleMap<_,Blake2_128Concat,T::AccountId,Blake2_128Concat,T::AccountId, Vec<u8>, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn active_link_provider)]
@@ -167,14 +159,18 @@ pub mod pallet {
 			let active_patient_link = <ActiveLinkPatient<T>>::get().ok_or("No patient")?;
 			let active_provider_link = <ActiveLinkProvider<T>>::get().ok_or("No provider")?;
 			if (node_address != active_provider_link) {
-				log::info!("registering provider");
+				if <PatientProviderLink<T>>::contains_key(active_provider_link.clone(), active_patient_link.clone()) {
+					log::info!("registering provider for oath");
+				}
+				log::info!("done registering provider");
 				return Ok(())
 			}
-			let all_providers = <<Provider<T>>::iter();
-			for (provider, details) in map.iter() {
-				if <PatientProviderLink<T>>::contains_key(provider.clone(), active_provider_link.clone()) {
-					log::info!("registering provider");
+			let all_providers = Provider::<T>::iter();
+			for (provider, details) in all_providers {
+				if <PatientProviderLink<T>>::contains_key(provider.clone(), active_patient_link.clone()) {
+					log::info!("registering all providers for oauth");
 				}
+				log::info!("done registering all providers");
 			}
 
 			Ok(())
