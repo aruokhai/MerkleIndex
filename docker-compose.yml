@@ -1,0 +1,38 @@
+version: '3'
+networks:
+  healthnet:
+services:
+    provider1:
+        build:
+            context: ./
+            dockerfile: Containerfile
+        ports:
+            - '30333:30333'
+            - '9944:9944'
+            - '9933:9933'
+        container_name: provider1
+        networks:
+          - healthnet
+        entrypoint: 
+          - entrypoint.sh
+          - alice
+        working_dir: /home/polkadot
+
+    provider2:
+        build:
+            context: ./
+            dockerfile: Containerfile
+        ports:
+            - '30334:30333'
+            - '9945:9944'
+            - '9934:9933'
+        container_name: provider2
+        networks:
+          - healthnet
+        entrypoint: 
+          - entrypoint.sh
+          - bob
+        working_dir: /home/polkadot
+    
+
+   
