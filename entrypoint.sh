@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-# This script is meant to be run on Unix/Linux based systems
+#!/bin/bash
 set -e 
 
 echo "*** Initializing Setup Environment ***"
@@ -9,37 +8,52 @@ echo "User is: $user"
 
 echo "*** Deleting Old State ***"
 delete_old_state (){
-    /usr/bin/node purge-chain --base-path /tmp/$user --chain local -y
+    /usr/bin/node purge-chain --base-path /tmp/$user --chain local -y || echo "no state found"
 }
 
 echo "*** Starting Node ***"
 run_node (){
     if [ $user == "alice" ]; then
-        ./target/release/node-template \
+        /usr/bin/node \
         --base-path /tmp/alice \
         --chain local \
         --alice \
         --port 30333 \
         --rpc-port 9944 \
-        --ws-external \
         --node-key 0000000000000000000000000000000000000000000000000000000000000001 \
         --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
         --validator
-    elif [ $user == "bob"]; then
-        until ./target/release/node-template \
+        echo "initialised Alice Node"
+    elif [ $user == "bob" ]; then
+        until /usr/bin/node \
             --base-path /tmp/bob \
             --chain local \
             --bob \
             --port 30334 \
             --rpc-port 9946 \
-            --ws-external \
             --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
             --validator \
-            --bootnodes /ip4/provider1/tcp/30333/p2p/12D3KooWEyoppNCUx8Yx66oV9fJnriXwCcXwDDUA2kj6vnc6iDEp  > /dev/null 2>&1
+            --bootnodes /dns/provider1/tcp/30333/p2p/12D3KooWEyoppNCUx8Yx66oV9fJnriXwCcXwDDUA2kj6vnc6iDEp 
         do     
 	        sleep 1
-        done 
+        done
+        echo "initialised Bob Node" 
+    elif [ $user == "charlie" ]; then
+        until /usr/bin/node \
+            --base-path /tmp/charlie \
+            --chain local \
+            --charlie \
+            --port 30334 \
+            --rpc-port 9946 \
+            --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
+            --validator \
+            --bootnodes /dns/provider1/tcp/30333/p2p/12D3KooWEyoppNCUx8Yx66oV9fJnriXwCcXwDDUA2kj6vnc6iDEp 
+        do     
+	        sleep 1
+        done
+        echo "initialised Charlie Node" 
     fi      
 }
 
 delete_old_state && run_node
+

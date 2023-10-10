@@ -3,7 +3,7 @@
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/reference/frame-pallets/>
-pub use frame_system::pallet::*;
+pub use pallet::*;
 
 #[cfg(test)]
 mod mock;

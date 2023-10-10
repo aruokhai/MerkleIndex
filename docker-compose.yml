@@ -14,25 +14,40 @@ services:
         networks:
           - healthnet
         entrypoint: 
-          - entrypoint.sh
+          - /usr/bin/entrypoint.sh
           - alice
-        working_dir: /home/polkadot
 
     provider2:
         build:
             context: ./
             dockerfile: Containerfile
         ports:
-            - '30334:30333'
-            - '9945:9944'
-            - '9934:9933'
+            - '30334:30334'
+            - '9946:9946'
+            - '9934:9934'
         container_name: provider2
         networks:
           - healthnet
         entrypoint: 
-          - entrypoint.sh
+          - /usr/bin/entrypoint.sh
           - bob
         working_dir: /home/polkadot
+
+    maintainer:
+      build:
+          context: ./
+          dockerfile: Containerfile
+      ports:
+          - '30335:30335'
+          - '9947:9947'
+          - '9935:9935'
+      container_name: maintainer
+      networks:
+        - healthnet
+      entrypoint: 
+        - /usr/bin/entrypoint.sh
+        - charlie
+      working_dir: /home/polkadot
     
 
    

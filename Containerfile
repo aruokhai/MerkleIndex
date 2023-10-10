@@ -20,14 +20,13 @@ RUN apt-get update && \
 USER polkadot
 
 # copy the compiled binary to the container
-COPY --chown=polkadot:polkadot --chmod=774 node /usr/bin/node
+COPY --chown=polkadot:polkadot --chmod=774 target/release/node /usr/bin/node
 
-COPY --chown=polkadot:polkadot --chmod=+x  entrypoint.sh /user/bin/
+COPY --chown=polkadot:polkadot --chmod=774  entrypoint.sh /usr/bin/
 
 # check if executable works in this container
 RUN /usr/bin/node --version
 
 # ws_port
-EXPOSE 9930 9333 9944 30333 30334
+EXPOSE 9930 9333 9944 30333 30334 9946 9934 30335 9947 9935
 
-CMD ["/usr/bin/node"]
