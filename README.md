@@ -1,18 +1,25 @@
-# Substrate Node Template
+# Merkle Index
 
-A fresh [Substrate](https://substrate.io/) node, ready for hacking :rocket:
+Merkle Index is a project that aims to create a Global Patient Index, which serves two purpose, as a Global Patient Identifier and also as a means to facilitate the exchange of Patient data. 
 
-A standalone version of this template is available for each release of Polkadot in the [Substrate Developer Hub Parachain Template](https://github.com/substrate-developer-hub/substrate-parachain-template/) repository.
-The parachain template is generated directly at each Polkadot release branch from the [Node Template in Substrate](https://github.com/paritytech/substrate/tree/master/bin/node-template) upstream
+It makes use of two technology (Consortium Blockchain) Parity Substrate and OAUTH2.
 
-It is usually best to use the stand-alone version to start a new project.
-All bugs, suggestions, and feature requests should be made upstream in the [Substrate](https://github.com/paritytech/substrate/tree/master/bin/node-template) repository.
+There are two components In these Project:
+
+1. Authorization Server
+2. Authorization Client.
+
+### Authorization Server
+This module contains the oauth2 specification and substrate framework. It serves as the authorization server, that allows third party to have access to their site. It is not mean't to be an authorization server for internal access of doctors or patient. The code is written in rust
+
+### Authorization Client
+This module is a cli tool which would be used by patients, to grant access and interact with the Authorization server. It is capable of creating Blockchain transaction and OAUTH2 calls. It is also written in rust 
+
 
 ## Getting Started
 
-Depending on your operating system and Rust version, there might be additional packages required to compile this template.
-Check the [Install](https://docs.substrate.io/install/) instructions for your platform for the most common dependencies.
-Alternatively, you can use one of the [alternative installation](#alternatives-installations) options.
+Depending on your experience with substrate and oauth2, i would recommend that you check a paper which is a foundation to this open source protocol.
+Check the [White Paper](https://docs.google.com/document/d/15uXRYQa77c4G6zMThNNoGjYWHpchPaK8A-8NuefiFWA/edit?usp=sharing).
 
 ### Build
 
