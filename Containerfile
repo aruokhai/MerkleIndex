@@ -22,7 +22,7 @@ USER polkadot
 # copy the compiled binary to the container
 COPY --chown=polkadot:polkadot --chmod=774 target/release/node /usr/bin/node
 
-COPY --chown=polkadot:polkadot --chmod=774  entrypoint.sh /usr/bin/
+COPY --chown=polkadot:polkadot --chmod=774  scripts/entrypoint.sh /usr/bin/
 
 # check if executable works in this container
 RUN /usr/bin/node --version

@@ -92,6 +92,7 @@ pub mod pallet {
 	#[pallet::hooks]
 	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
 		fn offchain_worker(block_number: BlockNumberFor<T>) {
+			log::info!("offchain started");
 			let node_address = StorageValueRef::persistent(b"index::node-address");
  			if let Ok(Some(address)) = node_address.get::<T::AccountId>() {
 				let result = Self::add_provider_oauth_client(address);

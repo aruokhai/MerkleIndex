@@ -22,6 +22,10 @@ run_node (){
         --rpc-port 9944 \
         --node-key 0000000000000000000000000000000000000000000000000000000000000001 \
         --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
+        --unsafe-rpc-external \
+        --offchain-worker Always \
+        --database rocksdb \
+        --enable-offchain-indexing true \
         --validator
         echo "initialised Alice Node"
     elif [ $user == "bob" ]; then
@@ -33,6 +37,10 @@ run_node (){
             --rpc-port 9946 \
             --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
             --validator \
+            --unsafe-rpc-external \
+            --offchain-worker Always \
+            --database rocksdb \
+            --enable-offchain-indexing true \
             --bootnodes /dns/provider1/tcp/30333/p2p/12D3KooWEyoppNCUx8Yx66oV9fJnriXwCcXwDDUA2kj6vnc6iDEp 
         do     
 	        sleep 1
