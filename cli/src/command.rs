@@ -13,9 +13,14 @@ use crate::connector::register_provider;
 )]
 
 pub struct Cli {
+    #[arg(short, long)]
+    pub url: String,
+
+    #[arg(short, long)]
+    pub user: String,
     /// Subcommands
     #[clap(subcommand)]
-    command: Commands,
+    pub command: Commands,
 }
 
 #[derive(Subcommand, Debug)]
@@ -29,17 +34,3 @@ enum Commands {
 }
 
 
-
-pub fn cli_match() -> Result<(), Error> {
-    // Parse the command line arguments
-    let cli = Cli::parse();
-
-    // Merge clap config file if the value is set
-    
-    // Execute the subcommand
-    match &cli.command {
-        Commands::RegisterProvider => register_provider()?,
-    }
-
-    Ok(())
-}
